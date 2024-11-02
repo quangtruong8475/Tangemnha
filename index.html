@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bầu Trời Sao với Cầu Vồng</title>
+  <style>
+    /* Định dạng bầu trời */
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #0d1b2a;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .sky {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Thiết kế chữ "Lâm thị tình" và trái tim */
+    .rainbow-name {
+      position: absolute;
+      font-size: 1.5em;
+      font-weight: bold;
+      animation: rainbow 3s infinite, float 6s infinite linear;
+      pointer-events: none;
+    }
+
+    /* Hiệu ứng màu sắc cầu vồng */
+    @keyframes rainbow {
+      0% { color: #ff0000; }
+      14% { color: #ff7f00; }
+      28% { color: #ffff00; }
+      42% { color: #00ff00; }
+      57% { color: #0000ff; }
+      71% { color: #4b0082; }
+      85% { color: #9400d3; }
+      100% { color: #ff0000; }
+    }
+
+    /* Hiệu ứng di chuyển lơ lửng */
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sky" id="sky"></div>
+
+  <script>
+    // Hàm tạo chữ "Lâm thị tình" và trái tim trên bầu trời
+    function createRainbowNames() {
+      const sky = document.getElementById("sky");
+
+      for (let i = 0; i < 20; i++) { // Tạo 20 tên và trái tim
+        const rainbowName = document.createElement("div");
+        rainbowName.classList.add("rainbow-name");
+
+        // Chọn ngẫu nhiên chữ hoặc trái tim
+        rainbowName.innerText = Math.random() > 0.5 ? "Lâm thị tình" : "❤️";
+
+        // Đặt vị trí ngẫu nhiên cho mỗi chữ hoặc trái tim
+        rainbowName.style.left = Math.random() * 100 + "vw";
+        rainbowName.style.top = Math.random() * 100 + "vh";
+
+        // Độ trễ ngẫu nhiên cho mỗi tên
+        rainbowName.style.animationDelay = Math.random() * 2 + "s";
+
+        sky.appendChild(rainbowName);
+      }
+    }
+
+    createRainbowNames();
+  </script>
+</body>
+</html>
