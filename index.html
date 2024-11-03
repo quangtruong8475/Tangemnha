@@ -1,84 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bầu Trời Sao với Cầu Vồng</title>
-  <style>
-    /* Định dạng bầu trời */
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #0d1b2a;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pháo Hoa - Lâm Thị Tình Rơi</title>
+    <style>
+        /* Đặt nền và phong cách chung */
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
 
-    .sky {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
+        /* Phong cách chữ rơi */
+        .falling-text {
+            position: absolute;
+            top: -50px;
+            font-size: 2rem;
+            color: #ff6699;
+            animation: fall 5s linear infinite;
+            opacity: 0;
+        }
 
-    /* Thiết kế chữ "Lâm thị tình" và trái tim */
-    .rainbow-name {
-      position: absolute;
-      font-size: 1.5em;
-      font-weight: bold;
-      animation: rainbow 3s infinite, float 6s infinite linear;
-      pointer-events: none;
-    }
-
-    /* Hiệu ứng màu sắc cầu vồng */
-    @keyframes rainbow {
-      0% { color: #ff0000; }
-      14% { color: #ff7f00; }
-      28% { color: #ffff00; }
-      42% { color: #00ff00; }
-      57% { color: #0000ff; }
-      71% { color: #4b0082; }
-      85% { color: #9400d3; }
-      100% { color: #ff0000; }
-    }
-
-    /* Hiệu ứng di chuyển lơ lửng */
-    @keyframes float {
-      from { transform: translateY(0); }
-      to { transform: translateY(-20px); }
-    }
-  </style>
+        /* Animation cho chữ rơi */
+        @keyframes fall {
+            0% { transform: translateY(0); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
 </head>
 <body>
-  <div class="sky" id="sky"></div>
 
-  <script>
-    // Hàm tạo chữ "Lâm thị tình" và trái tim trên bầu trời
-    function createRainbowNames() {
-      const sky = document.getElementById("sky");
+<!-- Khởi tạo canvas pháo hoa -->
+<canvas id="fireworksCanvas"></canvas>
 
-      for (let i = 0; i < 20; i++) { // Tạo 20 tên và trái tim
-        const rainbowName = document.createElement("div");
-        rainbowName.classList.add("rainbow-name");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Khởi tạo canvas cho pháo hoa
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
 
-        // Chọn ngẫu nhiên chữ hoặc trái tim
-        rainbowName.innerText = Math.random() > 0.5 ? "Lâm thị tình" : "❤️";
+    // Đặt kích thước canvas phù hợp với kích thước cửa sổ
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-        // Đặt vị trí ngẫu nhiên cho mỗi chữ hoặc trái tim
-        rainbowName.style.left = Math.random() * 100 + "vw";
-        rainbowName.style.top = Math.random() * 100 + "vh";
+    // Mảng để chứa các pháo hoa
+    const fireworks = [];
 
-        // Độ trễ ngẫu nhiên cho mỗi tên
-        rainbowName.style.animationDelay = Math.random() * 2 + "s";
-
-        sky.appendChild(rainbowName);
-      }
+    // Hàm tạo pháo hoa
+    function createFirework(x, y) {
+        const particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                angle: Math.random() * 2 * Math.PI,
+                speed: Math.random() * 5 + 2,
+                radius: Math.random() * 3 + 1,
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                alpha: 1
+            });
+        }
+        fireworks.push(particles);
     }
 
-    createRainbowNames();
-  </script>
+    // Hàm cập nhật và vẽ pháo hoa
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        fireworks.forEach((particles, index) => {
+            particles.forEach(p => {
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
+                p.alpha -= 0.02;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(${parseInt(p.color.slice(4, 7))}, ${parseInt(p.color.slice(9, 12))}, ${parseInt(p.color.slice(14, 17))}, ${p.alpha})`;
+                ctx.fill();
+
+                if (p.alpha <= 0) {
+                    particles.splice(particles.indexOf(p), 1);
+                }
+            });
+
+            if (particles.length === 0) {
+                fireworks.splice(index, 1);
+            }
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Tạo pháo hoa ngẫu nhiên mỗi giây
+    setInterval(() => {
+        createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+    }, 1000);
+
+    // Tạo hiệu ứng nhiều chữ rơi
+    function createFallingText() {
+        const text = document.createElement('div');
+        text.classList.add('falling-text');
+        text.textContent = "Lâm Thị Tình Rơi";
+        
+        // Đặt vị trí ngẫu nhiên cho chữ
+        text.style.left = Math.random() * window.innerWidth + 'px';
+        text.style.animationDuration = (Math.random() * 3 + 4) + 's'; // thời gian rơi ngẫu nhiên
+
+        document.body.appendChild(text);
+
+        // Xóa chữ khi rơi hết màn hình
+        setTimeout(() => {
+            text.remove();
+        }, 5000); // thời gian phù hợp với thời gian của animation
+    }
+
+    // Tạo nhiều chữ rơi sau mỗi 500ms
+    setInterval(createFallingText, 500);
+</script>
+
 </body>
 </html>
